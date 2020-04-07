@@ -3,6 +3,7 @@ package com.camm.note.view.ui;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -13,7 +14,7 @@ import android.widget.Toast;
 
 import com.camm.note.R;
 
-public class AddNoteActivity extends AppCompatActivity {
+public class AddEditNoteActivity extends AppCompatActivity {
 
     private EditText edtNewTitle;
     private EditText edtNewDescription;
@@ -32,7 +33,17 @@ public class AddNoteActivity extends AppCompatActivity {
         pickerNewPriority.setMaxValue(10);
 
         getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_close);
-        setTitle("Add Note");
+
+        Intent intent = getIntent();
+        if(intent.hasExtra("id")){
+            setTitle("Edit Note");
+            edtNewTitle.setText(intent.getStringExtra("title"));
+            edtNewDescription.setText(intent.getStringExtra("description"));
+            pickerNewPriority.setValue(intent.getIntExtra("id", 1));
+        }
+        else{
+            setTitle("Add Note");
+        }
     }
 
     private void saveNote(){
@@ -42,6 +53,20 @@ public class AddNoteActivity extends AppCompatActivity {
 
         if(title.trim().isEmpty() || description.trim().isEmpty()){
             Toast.makeText(this, "Please type title and description", Toast.LENGTH_SHORT).show();
+        }
+        else{
+            Intent intent = new Intent();
+            intent.putExtra("title", title);
+            intent.putExtra("description", description);
+            intent.putExtra("priority", priority);
+
+            int id = getIntent().getIntExtra("id", -1);
+            if(id != -1){
+                intent.putExtra("id", id);
+            }
+
+            setResult(RESULT_OK, intent);
+            finish();
         }
     }
 
